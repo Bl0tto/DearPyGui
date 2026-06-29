@@ -1783,3 +1783,31 @@ apply_drag_drop_nodraw(mvAppItem* item)
         }
     }
 }
+
+void
+DearPyGui::draw_dock_space(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceConfig& config)
+{
+    if (!item.config.show) return;
+
+    ScopedID id(item.uuid);
+    config.dockId = ImGui::DockSpace(
+        (ImGuiID)(item.uuid & 0xFFFFFFFFULL),
+        ImVec2((float)item.config.width, (float)item.config.height),
+        config.flags
+    );
+    item.state.lastFrameUpdate = GContext->frame;
+}
+
+void
+DearPyGui::fill_configuration_dict(const mvDockSpaceConfig& inConfig, PyObject* outDict)
+{
+    if (outDict == nullptr) return;
+    PyDict_SetItemString(outDict, "flags", ToPyLong((long)inConfig.flags));
+}
+
+void
+DearPyGui::set_configuration(PyObject* inDict, mvDockSpaceConfig& outConfig)
+{
+    if (inDict == nullptr) return;
+    if (PyObject* item = PyDict_GetItemString(inDict, "flags")) outConfig.flags = (ImGuiDockNodeFlags)ToInt(item);
+}

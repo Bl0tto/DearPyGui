@@ -468,6 +468,14 @@ GetModuleConstants()
 
 	}
 
+	ModuleConstants.push_back({"mvDockNodeFlags_KeepAliveOnly",          (long)ImGuiDockNodeFlags_KeepAliveOnly});
+	ModuleConstants.push_back({"mvDockNodeFlags_NoDockingInCentralNode", (long)ImGuiDockNodeFlags_NoDockingOverCentralNode});
+	ModuleConstants.push_back({"mvDockNodeFlags_PassthruCentralNode",    (long)ImGuiDockNodeFlags_PassthruCentralNode});
+	ModuleConstants.push_back({"mvDockNodeFlags_NoDockingSplit",         (long)ImGuiDockNodeFlags_NoDockingSplit});
+	ModuleConstants.push_back({"mvDockNodeFlags_NoResize",               (long)ImGuiDockNodeFlags_NoResize});
+	ModuleConstants.push_back({"mvDockNodeFlags_AutoHideTabBar",         (long)ImGuiDockNodeFlags_AutoHideTabBar});
+	ModuleConstants.push_back({"mvDockNodeFlags_NoUndocking",            (long)ImGuiDockNodeFlags_NoUndocking});
+
 	First_Run = false;
 	return ModuleConstants;
 }
@@ -749,6 +757,7 @@ PyInit__dearpygui(void)
 	MV_ADD_COMMAND(bind_item_theme);
 	MV_ADD_COMMAND(capture_next_item);
 	MV_ADD_COMMAND(get_platform);
+	MV_ADD_COMMAND(set_next_window_dock_id);
 
 	methods.push_back({ NULL, NULL, 0, NULL });
 

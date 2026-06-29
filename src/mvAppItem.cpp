@@ -1051,6 +1051,8 @@ DearPyGui::GetEntityDesciptionFlags(mvAppItemType type)
     case mvAppItemType::mvChildWindow:
     case mvAppItemType::mvFilterSet: return MV_ITEM_DESC_CONTAINER;
 
+    case mvAppItemType::mvDockSpace: return 0;
+
     case mvAppItemType::mvActivatedHandler:
     case mvAppItemType::mvActiveHandler:
     case mvAppItemType::mvClickedHandler:
@@ -1553,6 +1555,16 @@ DearPyGui::GetAllowableParents(mvAppItemType type)
         MV_ADD_PARENT(mvAppItemType::mvProgressBar),
         MV_ADD_PARENT(mvAppItemType::mvNode),
         MV_ADD_PARENT(mvAppItemType::mvPlot)
+        MV_END_PARENTS
+
+    case mvAppItemType::mvDockSpace:
+        MV_START_PARENTS
+        MV_ADD_PARENT(mvAppItemType::mvWindowAppItem),
+        MV_ADD_PARENT(mvAppItemType::mvChildWindow),
+        MV_ADD_PARENT(mvAppItemType::mvGroup),
+        MV_ADD_PARENT(mvAppItemType::mvCollapsingHeader),
+        MV_ADD_PARENT(mvAppItemType::mvStage),
+        MV_ADD_PARENT(mvAppItemType::mvTemplateRegistry)
         MV_END_PARENTS
 
     default:
@@ -5586,6 +5598,22 @@ DearPyGui::GetEntityParser(mvAppItemType type)
         setup.about = "Adds an item handler registry.";
         setup.category = { "Widgets", "Events", "Registries", "Containers" };
         setup.createContextManager = true;
+        break;
+    }
+
+    case mvAppItemType::mvDockSpace:
+    {
+        AddCommonArgs(args, (CommonParserArgs)(
+            MV_PARSER_ARG_ID |
+            MV_PARSER_ARG_WIDTH |
+            MV_PARSER_ARG_HEIGHT |
+            MV_PARSER_ARG_PARENT |
+            MV_PARSER_ARG_BEFORE |
+            MV_PARSER_ARG_SHOW)
+        );
+        args.push_back({ mvPyDataType::Integer, "flags", mvArgType::KEYWORD_ARG, "0", "ImGuiDockNodeFlags. Use mvDockNodeFlags_* constants." });
+        setup.about = "Submits a local dock space into the current window scope. Call add_dock_space() inside a window or child window. Returns the dock node ID. Pass this ID to set_next_window_dock_id() before creating a window to dock it here.";
+        setup.category = { "Docking", "Widgets" };
         break;
     }
 

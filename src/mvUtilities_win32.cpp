@@ -15,7 +15,6 @@
 #include <shlobj.h>
 #include <shobjidl.h> 
 #include <windows.h>
-#include <atlbase.h> // Contains the declaration of CComPtr.
 #include <array>
 #include <codecvt>
 #include <sstream>
