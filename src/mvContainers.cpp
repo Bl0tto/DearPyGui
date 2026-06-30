@@ -1827,7 +1827,7 @@ DearPyGui::draw_dock_space_proxy(ImDrawList* drawlist, mvAppItem& item, mvDockSp
         ImGuiWindowFlags_NoNav                |
         ImGuiWindowFlags_NoMove               |
         ImGuiWindowFlags_NoBackground         |
-        ImGuiWindowFlags_NoBringToDisplayFront;
+        ImGuiWindowFlags_NoBringToFrontOnFocus;
 
     if (ImGui::Begin(windowName.c_str(), nullptr, kFlags))
     {
