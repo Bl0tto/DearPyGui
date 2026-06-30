@@ -297,6 +297,7 @@ GetEntityCommand(mvAppItemType type)
     case mvAppItemType::mvMenuItem:                    return "add_menu_item";
     case mvAppItemType::mvChildWindow:                 return "add_child_window";
     case mvAppItemType::mvDockSpace:                   return "add_dock_space";
+    case mvAppItemType::mvDockSpaceProxy:              return "add_dock_space_proxy";
     case mvAppItemType::mvGroup:                       return "add_group";
     case mvAppItemType::mvSliderFloat:                 return "add_slider_float";
     case mvAppItemType::mvSliderDouble:                return "add_slider_double";

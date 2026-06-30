@@ -469,6 +469,7 @@ GetModuleConstants()
 	}
 
 	ModuleConstants.push_back({"mvDockNodeFlags_KeepAliveOnly",          (long)ImGuiDockNodeFlags_KeepAliveOnly});
+	// ImGui renamed NoDockingInCentralNode -> NoDockingOverCentralNode; keep old DPG name for backwards compatibility
 	ModuleConstants.push_back({"mvDockNodeFlags_NoDockingInCentralNode", (long)ImGuiDockNodeFlags_NoDockingOverCentralNode});
 	ModuleConstants.push_back({"mvDockNodeFlags_PassthruCentralNode",    (long)ImGuiDockNodeFlags_PassthruCentralNode});
 	ModuleConstants.push_back({"mvDockNodeFlags_NoDockingSplit",         (long)ImGuiDockNodeFlags_NoDockingSplit});

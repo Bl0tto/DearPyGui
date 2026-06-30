@@ -257,5 +257,91 @@ class TestItemDetails(unittest.TestCase):
         dpg.destroy_context()
 
 
+class TestDockSpace(unittest.TestCase):
+
+    def setUp(self):
+        dpg.create_context()
+        self.wndw = dpg.add_window()
+        dpg.setup_dearpygui()
+
+    def tearDown(self):
+        dpg.stop_dearpygui()
+        dpg.destroy_context()
+
+    def test_add_dock_space_returns_uuid(self):
+        dock_id = dpg.add_dock_space(parent=self.wndw)
+        self.assertIsInstance(dock_id, int)
+        self.assertNotEqual(dock_id, 0)
+
+    def test_add_dock_space_exists_in_registry(self):
+        dock_id = dpg.add_dock_space(parent=self.wndw)
+        self.assertTrue(dpg.does_item_exist(dock_id))
+
+    def test_add_dock_space_configuration_has_flags(self):
+        dock_id = dpg.add_dock_space(parent=self.wndw, flags=dpg.mvDockNodeFlags_NoResize)
+        cfg = dpg.get_item_configuration(dock_id)
+        self.assertIn("flags", cfg)
+        self.assertEqual(cfg["flags"], dpg.mvDockNodeFlags_NoResize)
+
+    def test_configure_dock_space_flags_roundtrip(self):
+        dock_id = dpg.add_dock_space(parent=self.wndw)
+        dpg.configure_item(dock_id, flags=dpg.mvDockNodeFlags_NoDockingSplit)
+        cfg = dpg.get_item_configuration(dock_id)
+        self.assertEqual(cfg["flags"], dpg.mvDockNodeFlags_NoDockingSplit)
+
+    def test_mvDockNodeFlags_constants_are_integers(self):
+        constants = [
+            dpg.mvDockNodeFlags_KeepAliveOnly,
+            dpg.mvDockNodeFlags_NoDockingInCentralNode,
+            dpg.mvDockNodeFlags_PassthruCentralNode,
+            dpg.mvDockNodeFlags_NoDockingSplit,
+            dpg.mvDockNodeFlags_NoResize,
+            dpg.mvDockNodeFlags_AutoHideTabBar,
+            dpg.mvDockNodeFlags_NoUndocking,
+        ]
+        for c in constants:
+            self.assertIsInstance(c, int)
+
+    def test_set_next_window_dock_id_no_error(self):
+        dpg.set_next_window_dock_id(0)
+
+
+class TestDockSpaceProxy(unittest.TestCase):
+
+    def setUp(self):
+        dpg.create_context()
+        self.wndw = dpg.add_window()
+        self.dock_space = dpg.add_dock_space(parent=self.wndw)
+        dpg.setup_dearpygui()
+
+    def tearDown(self):
+        dpg.stop_dearpygui()
+        dpg.destroy_context()
+
+    def test_add_dock_space_proxy_returns_uuid(self):
+        proxy_id = dpg.add_dock_space_proxy(self.dock_space)
+        self.assertIsInstance(proxy_id, int)
+        self.assertNotEqual(proxy_id, 0)
+
+    def test_add_dock_space_proxy_exists_in_registry(self):
+        proxy_id = dpg.add_dock_space_proxy(self.dock_space)
+        self.assertTrue(dpg.does_item_exist(proxy_id))
+
+    def test_add_dock_space_proxy_is_root_item(self):
+        proxy_id = dpg.add_dock_space_proxy(self.dock_space)
+        info = dpg.get_item_info(proxy_id)
+        self.assertFalse(info.get("parent", 0))
+
+    def test_add_dock_space_proxy_show_false(self):
+        proxy_id = dpg.add_dock_space_proxy(self.dock_space, show=False)
+        cfg = dpg.get_item_configuration(proxy_id)
+        self.assertFalse(cfg.get("show", True))
+
+    def test_add_dock_space_proxy_string_tag(self):
+        proxy_id = dpg.add_dock_space_proxy(self.dock_space, tag="my_proxy")
+        self.assertTrue(dpg.does_item_exist("my_proxy"))
+        self.assertEqual(dpg.get_item_alias(proxy_id), "my_proxy")
+
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], verbosity=2, exit=should_exit)

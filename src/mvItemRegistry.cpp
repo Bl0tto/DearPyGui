@@ -150,6 +150,7 @@ GetRootsList(mvItemRegistry& registry, mvAppItemType type)
     switch (type)
     {
         case mvAppItemType::mvWindowAppItem: return registry.windowRoots;
+        case mvAppItemType::mvDockSpaceProxy: return registry.windowRoots;
         case mvAppItemType::mvColorMapRegistry: return registry.colormapRoots;
         case mvAppItemType::mvFileDialog: return registry.filedialogRoots;
         case mvAppItemType::mvStage: return registry.stagingRoots;

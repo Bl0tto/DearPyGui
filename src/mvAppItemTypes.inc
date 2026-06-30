@@ -169,4 +169,5 @@
     X( mvSliderDouble ) \
     X( mvSliderDoubleMulti ) \
     X( mvCustomSeries ) \
-    X( mvDockSpace )
+    X( mvDockSpace ) \
+    X( mvDockSpaceProxy )

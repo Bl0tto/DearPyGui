@@ -1053,6 +1053,8 @@ DearPyGui::GetEntityDesciptionFlags(mvAppItemType type)
 
     case mvAppItemType::mvDockSpace: return 0;
 
+    case mvAppItemType::mvDockSpaceProxy: return MV_ITEM_DESC_ROOT;
+
     case mvAppItemType::mvActivatedHandler:
     case mvAppItemType::mvActiveHandler:
     case mvAppItemType::mvClickedHandler:
@@ -1565,6 +1567,10 @@ DearPyGui::GetAllowableParents(mvAppItemType type)
         MV_ADD_PARENT(mvAppItemType::mvCollapsingHeader),
         MV_ADD_PARENT(mvAppItemType::mvStage),
         MV_ADD_PARENT(mvAppItemType::mvTemplateRegistry)
+        MV_END_PARENTS
+
+    case mvAppItemType::mvDockSpaceProxy:
+        MV_START_PARENTS
         MV_END_PARENTS
 
     default:
@@ -5614,6 +5620,22 @@ DearPyGui::GetEntityParser(mvAppItemType type)
         args.push_back({ mvPyDataType::Integer, "flags", mvArgType::KEYWORD_ARG, "0", "ImGuiDockNodeFlags. Use mvDockNodeFlags_* constants." });
         setup.about = "Submits a local dock space into the current window scope. Call add_dock_space() inside a window or child window. Returns the dock node ID. Pass this ID to set_next_window_dock_id() before creating a window to dock it here.";
         setup.category = { "Docking", "Widgets" };
+        break;
+    }
+
+    case mvAppItemType::mvDockSpaceProxy:
+    {
+        AddCommonArgs(args, (CommonParserArgs)(
+            MV_PARSER_ARG_ID |
+            MV_PARSER_ARG_SHOW)
+        );
+        args.push_back({ mvPyDataType::UUID, "dock_space_id", mvArgType::REQUIRED_ARG, "0",
+            "Tag of the add_dock_space() item whose dock node must stay alive." });
+        setup.about = "Creates a root-level keep-alive proxy for a dock space. "
+            "Prevents dock node GC when the host window is on an inactive tab. "
+            "Place at application root (no parent). Delete in the host panel's on_close().";
+        setup.category = { "Docking" };
+        setup.returnType = mvPyDataType::UUID;
         break;
     }
 
