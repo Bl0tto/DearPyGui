@@ -4239,3 +4239,17 @@ get_platform(PyObject* self, PyObject* args, PyObject* kwargs)
 	return ToPyInt(2L);
 #endif
 }
+
+static PyObject*
+set_next_window_dock_id(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+	unsigned long long dock_id = 0;
+	int cond = 0;
+
+	static const char* kwlist[] = { "dock_id", "cond", nullptr };
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "K|i", (char**)kwlist, &dock_id, &cond))
+		return GetPyNone();
+
+	ImGui::SetNextWindowDockID((ImGuiID)(dock_id & 0xFFFFFFFFULL), (ImGuiCond)cond);
+	return GetPyNone();
+}

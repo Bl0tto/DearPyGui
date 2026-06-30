@@ -273,3 +273,53 @@ public:
     void handleSpecificKeywordArgs(PyObject* dict) override { DearPyGui::set_configuration(dict, *this, configData); }
     void getSpecificConfiguration(PyObject* dict) override { DearPyGui::fill_configuration_dict(configData, dict); }
 };
+
+struct mvDockSpaceConfig {
+    ImGuiDockNodeFlags flags = 0;
+    ImGuiID dockId = 0;
+};
+
+namespace DearPyGui {
+    void fill_configuration_dict(const mvDockSpaceConfig& inConfig, PyObject* outDict);
+    void set_configuration(PyObject* inDict, mvDockSpaceConfig& outConfig);
+    void draw_dock_space(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceConfig& config);
+}
+
+class mvDockSpace : public mvAppItem
+{
+public:
+    mvDockSpaceConfig configData{};
+    explicit mvDockSpace(mvUUID uuid) : mvAppItem(uuid) {}
+    void draw(ImDrawList* drawlist, float x, float y) override { DearPyGui::draw_dock_space(drawlist, *this, configData); }
+    void handleSpecificKeywordArgs(PyObject* dict) override { DearPyGui::set_configuration(dict, configData); }
+    void getSpecificConfiguration(PyObject* dict) override { DearPyGui::fill_configuration_dict(configData, dict); }
+    PyObject* getPyValue() override { return ToPyLong((long)configData.dockId); }
+};
+
+//-----------------------------------------------------------------------------
+// mvDockSpaceProxy
+//-----------------------------------------------------------------------------
+
+struct mvDockSpaceProxyConfig
+{
+    ImGuiID dockSpaceId = 0;
+};
+
+namespace DearPyGui {
+    void fill_configuration_dict(const mvDockSpaceProxyConfig& inConfig, PyObject* outDict);
+    void set_configuration(PyObject* inDict, mvDockSpaceProxyConfig& outConfig);
+    void draw_dock_space_proxy(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceProxyConfig& config);
+}
+
+class mvDockSpaceProxy : public mvAppItem
+{
+public:
+    mvDockSpaceProxyConfig configData{};
+    explicit mvDockSpaceProxy(mvUUID uuid) : mvAppItem(uuid) {}
+    void draw(ImDrawList* drawlist, float x, float y) override
+        { DearPyGui::draw_dock_space_proxy(drawlist, *this, configData); }
+    void handleSpecificKeywordArgs(PyObject* dict) override
+        { DearPyGui::set_configuration(dict, configData); }
+    void getSpecificConfiguration(PyObject* dict) override
+        { DearPyGui::fill_configuration_dict(configData, dict); }
+};

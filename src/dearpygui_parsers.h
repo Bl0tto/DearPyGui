@@ -1981,4 +1981,18 @@ InsertParser_Block4(std::map<std::string, mvPythonParser>& parsers)
 		mvPythonParser parser = FinalizeParser(setup, args);
 		parsers.insert({ "get_platform", parser });
 	}
+
+	{
+		std::vector<mvPythonDataElement> args;
+		args.push_back({ mvPyDataType::Long, "dock_id", mvArgType::REQUIRED_ARG, "", "Dock node ID returned by add_dock_space()." });
+		args.push_back({ mvPyDataType::Integer, "cond", mvArgType::KEYWORD_ARG, "0", "ImGuiCond value. 0 = ImGuiCond_Always." });
+
+		mvPythonParserSetup setup;
+		setup.about = "Sets the dock ID for the next window to be created. Call before dpg.window() to dock it into a local dock space created with add_dock_space().";
+		setup.category = { "Docking" };
+		setup.returnType = mvPyDataType::None;
+
+		mvPythonParser parser = FinalizeParser(setup, args);
+		parsers.insert({ "set_next_window_dock_id", parser });
+	}
 }

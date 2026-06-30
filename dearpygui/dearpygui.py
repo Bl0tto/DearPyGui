@@ -10690,3 +10690,75 @@ mvReservedUUID_7=internal_dpg.mvReservedUUID_7
 mvReservedUUID_8=internal_dpg.mvReservedUUID_8
 mvReservedUUID_9=internal_dpg.mvReservedUUID_9
 mvReservedUUID_10=internal_dpg.mvReservedUUID_10
+
+##########################################################################
+# DockSpace extension — added in Bl0tto/DearPyGui fork
+##########################################################################
+
+def add_dock_space(*, label: str =None, user_data: Any =None, use_internal_label: bool =True, tag: Union[int, str] =0, width: int =0, height: int =0, parent: Union[int, str] =0, before: Union[int, str] =0, show: bool =True, flags: int =0, **kwargs) -> Union[int, str]:
+	"""	 Submits a local dock space into the current window scope. Call add_dock_space() inside a window or child window. Returns the dock node ID. Pass this ID to set_next_window_dock_id() before creating a window to dock it here.
+
+	Args:
+		label (str, optional): Overrides 'name' as label.
+		user_data (Any, optional): User data for callbacks.
+		use_internal_label (bool, optional): Use generated internal label instead of user specified (appends ### uuid).
+		tag (Union[int, str], optional): Unique id used to programmatically refer to the item. If label is unused this will be the label.
+		width (int, optional): Width of the dock space. 0 = fill available width.
+		height (int, optional): Height of the dock space. 0 = fill available height.
+		parent (Union[int, str], optional): Parent to add this item to. (runtime adding)
+		before (Union[int, str], optional): This item will be displayed before the specified item in the parent.
+		show (bool, optional): Attempt to render widget.
+		flags (int, optional): ImGuiDockNodeFlags. Use mvDockNodeFlags_* constants.
+		id (Union[int, str], optional): (deprecated)
+	Returns:
+		Union[int, str]
+	"""
+
+	if 'id' in kwargs.keys():
+		warnings.warn('id keyword renamed to tag', DeprecationWarning, 2)
+		tag=kwargs['id']
+
+	return internal_dpg.add_dock_space(label=label, user_data=user_data, use_internal_label=use_internal_label, tag=tag, width=width, height=height, parent=parent, before=before, show=show, flags=flags, **kwargs)
+
+def set_next_window_dock_id(dock_id: int, *, cond: int =0, **kwargs) -> None:
+	"""	 Sets the dock ID for the next window to be created. Call before dpg.window() to dock it into a local dock space created with add_dock_space().
+
+	Args:
+		dock_id (int): Dock node ID returned by add_dock_space().
+		cond (int, optional): ImGuiCond value. 0 = ImGuiCond_Always.
+	Returns:
+		None
+	"""
+
+	return internal_dpg.set_next_window_dock_id(dock_id, cond=cond, **kwargs)
+
+# DockNodeFlags constants
+mvDockNodeFlags_KeepAliveOnly          = internal_dpg.mvDockNodeFlags_KeepAliveOnly
+mvDockNodeFlags_NoDockingInCentralNode = internal_dpg.mvDockNodeFlags_NoDockingInCentralNode
+mvDockNodeFlags_PassthruCentralNode    = internal_dpg.mvDockNodeFlags_PassthruCentralNode
+mvDockNodeFlags_NoDockingSplit         = internal_dpg.mvDockNodeFlags_NoDockingSplit
+mvDockNodeFlags_NoResize               = internal_dpg.mvDockNodeFlags_NoResize
+mvDockNodeFlags_AutoHideTabBar         = internal_dpg.mvDockNodeFlags_AutoHideTabBar
+mvDockNodeFlags_NoUndocking            = internal_dpg.mvDockNodeFlags_NoUndocking
+
+def add_dock_space_proxy(dock_space_id: Union[int, str], *, label: str=None, user_data: Any=None, use_internal_label: bool=True, tag: Union[int, str]=0, show: bool=True, **kwargs) -> Union[int, str]:
+	"""	 Creates a root-level keep-alive proxy for a dock space. Prevents ImGui from
+	garbage-collecting the dock node when the host window is on an inactive tab.
+	Call once after add_dock_space(); the proxy runs every frame as a root item.
+
+	Args:
+		dock_space_id (Union[int, str]): Tag of the add_dock_space() item whose dock node must stay alive.
+		label (str, optional): Overrides 'name' as label.
+		user_data (Any, optional): User data for callbacks.
+		use_internal_label (bool, optional): Use generated internal label instead of user specified (appends ### uuid).
+		tag (Union[int, str], optional): Unique id used to programmatically refer to the item.
+		show (bool, optional): Attempt to render widget.
+	Returns:
+		Union[int, str]
+	"""
+
+	if 'id' in kwargs.keys():
+		warnings.warn('id keyword renamed to tag', DeprecationWarning, 2)
+		tag=kwargs['id']
+
+	return internal_dpg.add_dock_space_proxy(dock_space_id, label=label, user_data=user_data, use_internal_label=use_internal_label, tag=tag, show=show, **kwargs)

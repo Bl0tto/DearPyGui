@@ -1781,3 +1781,73 @@ apply_drag_drop_nodraw(mvAppItem* item)
         }
     }
 }
+
+void
+DearPyGui::draw_dock_space(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceConfig& config)
+{
+    if (!item.config.show) return;
+
+    ScopedID id(item.uuid);
+    config.dockId = ImGui::DockSpace(
+        (ImGuiID)(item.uuid & 0xFFFFFFFFULL),
+        ImVec2((float)item.config.width, (float)item.config.height),
+        config.flags
+    );
+    item.state.lastFrameUpdate = GContext->frame;
+}
+
+void
+DearPyGui::fill_configuration_dict(const mvDockSpaceConfig& inConfig, PyObject* outDict)
+{
+    if (outDict == nullptr) return;
+    PyDict_SetItemString(outDict, "flags", ToPyLong((long)inConfig.flags));
+}
+
+void
+DearPyGui::set_configuration(PyObject* inDict, mvDockSpaceConfig& outConfig)
+{
+    if (inDict == nullptr) return;
+    if (PyObject* item = PyDict_GetItemString(inDict, "flags")) outConfig.flags = (ImGuiDockNodeFlags)ToInt(item);
+}
+
+void
+DearPyGui::draw_dock_space_proxy(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceProxyConfig& config)
+{
+    if (!item.config.show) return;
+    if (config.dockSpaceId == 0) return;
+
+    ImGui::SetNextWindowPos(ImVec2(-9999.0f, -9999.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(1.0f, 1.0f), ImGuiCond_Always);
+
+    std::string windowName = "##dpg_dsp_" + std::to_string(config.dockSpaceId);
+
+    constexpr ImGuiWindowFlags kFlags =
+        ImGuiWindowFlags_NoDecoration         |
+        ImGuiWindowFlags_NoInputs             |
+        ImGuiWindowFlags_NoNav                |
+        ImGuiWindowFlags_NoMove               |
+        ImGuiWindowFlags_NoBackground         |
+        ImGuiWindowFlags_NoBringToDisplayFront;
+
+    if (ImGui::Begin(windowName.c_str(), nullptr, kFlags))
+    {
+        ImGui::DockSpace(config.dockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_KeepAliveOnly);
+    }
+    ImGui::End();
+    item.state.lastFrameUpdate = GContext->frame;
+}
+
+void
+DearPyGui::fill_configuration_dict(const mvDockSpaceProxyConfig& inConfig, PyObject* outDict)
+{
+    if (outDict == nullptr) return;
+    PyDict_SetItemString(outDict, "dock_space_id", ToPyLong((long)inConfig.dockSpaceId));
+}
+
+void
+DearPyGui::set_configuration(PyObject* inDict, mvDockSpaceProxyConfig& outConfig)
+{
+    if (inDict == nullptr) return;
+    if (PyObject* item = PyDict_GetItemString(inDict, "dock_space_id"))
+        outConfig.dockSpaceId = (ImGuiID)(ToUUID(item) & 0xFFFFFFFFULL);
+}

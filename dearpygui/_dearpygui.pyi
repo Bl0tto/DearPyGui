@@ -114,6 +114,14 @@ def add_date_picker(*, label: str ='', user_data: Any ='', use_internal_label: b
 	"""Adds a date picker."""
 	...
 
+def add_dock_space(*, label: str ='', user_data: Any ='', use_internal_label: bool ='', tag: Union[int, str] ='', width: int ='', height: int ='', parent: Union[int, str] ='', before: Union[int, str] ='', show: bool ='', flags: int ='') -> Union[int, str]:
+	"""Submits a local dock space into the current window scope."""
+	...
+
+def add_dock_space_proxy(dock_space_id : Union[int, str], *, label: str ='', user_data: Any ='', use_internal_label: bool ='', tag: Union[int, str] ='', show: bool ='') -> Union[int, str]:
+	"""Creates a root-level keep-alive proxy for a dock space."""
+	...
+
 def add_digital_series(x : Union[List[float], Tuple[float, ...]], y : Union[List[float], Tuple[float, ...]], *, label: str ='', user_data: Any ='', use_internal_label: bool ='', tag: Union[int, str] ='', parent: Union[int, str] ='', before: Union[int, str] ='', source: Union[int, str] ='', show: bool ='') -> Union[int, str]:
 	"""Adds a digital series to a plot. Digital plots do not respond to y drag or zoom, and are always referenced to the bottom of the plot."""
 	...
@@ -1159,6 +1167,10 @@ def set_item_children(item : Union[int, str], source : Union[int, str], slot : i
 	"""Sets an item's children."""
 	...
 
+def set_next_window_dock_id(dock_id : int, *, cond: int ='') -> None:
+	"""Sets the dock ID for the next window to be created."""
+	...
+
 def set_primary_window(window : Union[int, str], value : bool ='') -> None:
 	"""Sets the primary window."""
 	...
@@ -1932,3 +1944,10 @@ mvReservedUUID_7=0
 mvReservedUUID_8=0
 mvReservedUUID_9=0
 mvReservedUUID_10=0
+mvDockNodeFlags_KeepAliveOnly=0
+mvDockNodeFlags_NoDockingInCentralNode=0
+mvDockNodeFlags_PassthruCentralNode=0
+mvDockNodeFlags_NoDockingSplit=0
+mvDockNodeFlags_NoResize=0
+mvDockNodeFlags_AutoHideTabBar=0
+mvDockNodeFlags_NoUndocking=0
