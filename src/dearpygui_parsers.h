@@ -523,6 +523,7 @@ InsertParser_Block1(std::map<std::string, mvPythonParser>& parsers)
 		args.push_back({ mvPyDataType::Bool, "docking", mvArgType::KEYWORD_ARG, "False", "Enables docking support." });
 		args.push_back({ mvPyDataType::Bool, "docking_space", mvArgType::KEYWORD_ARG, "False", "add explicit dockspace over viewport" });
 		args.push_back({ mvPyDataType::Bool, "docking_shift_only", mvArgType::KEYWORD_ARG, "False", "When False, pressing Shift will disable docking feature, when True, pressing Shift will enable it." });
+		args.push_back({ mvPyDataType::Bool, "viewports", mvArgType::KEYWORD_ARG, "False", "Enables native multi-viewport support (drag docked panels into separate OS windows)." });
 		args.push_back({ mvPyDataType::String, "init_file", mvArgType::KEYWORD_ARG, "''" });
 		args.push_back({ mvPyDataType::Bool, "auto_save_init_file", mvArgType::KEYWORD_ARG, "False" });
 		args.push_back({ mvPyDataType::Integer, "device", mvArgType::KEYWORD_ARG, "-1", "Which display adapter to use. (-1 will use default)" });

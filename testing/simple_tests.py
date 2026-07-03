@@ -343,5 +343,64 @@ class TestDockSpaceProxy(unittest.TestCase):
         self.assertEqual(dpg.get_item_alias(proxy_id), "my_proxy")
 
 
+class TestNestedDockSpace(unittest.TestCase):
+
+    def setUp(self):
+        dpg.create_context()
+        self.outer_wndw = dpg.add_window()
+        self.outer_dock = dpg.add_dock_space(parent=self.outer_wndw)
+        self.inner_wndw = dpg.add_window()
+        dpg.setup_dearpygui()
+
+    def tearDown(self):
+        dpg.stop_dearpygui()
+        dpg.destroy_context()
+
+    def test_nested_dock_space_inside_window_returns_uuid(self):
+        inner_dock = dpg.add_dock_space(parent=self.inner_wndw)
+        self.assertIsInstance(inner_dock, int)
+        self.assertNotEqual(inner_dock, 0)
+
+    def test_nested_dock_space_is_independent_of_outer(self):
+        inner_dock = dpg.add_dock_space(parent=self.inner_wndw)
+        self.assertNotEqual(inner_dock, self.outer_dock)
+
+    def test_proxy_can_target_nested_dock_space(self):
+        inner_dock = dpg.add_dock_space(parent=self.inner_wndw)
+        proxy_id = dpg.add_dock_space_proxy(inner_dock)
+        self.assertTrue(dpg.does_item_exist(proxy_id))
+
+    def test_proxy_can_target_nested_dock_space_by_tag(self):
+        dpg.add_dock_space(parent=self.inner_wndw, tag="nested_dock_tag")
+        proxy_id = dpg.add_dock_space_proxy("nested_dock_tag")
+        self.assertTrue(dpg.does_item_exist(proxy_id))
+
+
+class TestViewports(unittest.TestCase):
+
+    def setUp(self):
+        dpg.create_context()
+        dpg.setup_dearpygui()
+
+    def tearDown(self):
+        dpg.stop_dearpygui()
+        dpg.destroy_context()
+
+    def test_viewports_default_is_false(self):
+        cfg = dpg.get_app_configuration()
+        self.assertFalse(cfg["viewports"])
+
+    def test_configure_app_viewports_roundtrip(self):
+        dpg.configure_app(viewports=True)
+        cfg = dpg.get_app_configuration()
+        self.assertTrue(cfg["viewports"])
+
+    def test_configure_app_viewports_independent_of_docking(self):
+        dpg.configure_app(viewports=True)
+        cfg = dpg.get_app_configuration()
+        self.assertTrue(cfg["viewports"])
+        self.assertFalse(cfg["docking"])
+
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], verbosity=2, exit=should_exit)

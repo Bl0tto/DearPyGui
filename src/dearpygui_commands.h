@@ -2710,6 +2710,7 @@ configure_app(PyObject* self, PyObject* args, PyObject* kwargs)
 	if (PyObject* item = PyDict_GetItemString(kwargs, "docking")) GContext->IO.docking = ToBool(item);
 	if (PyObject* item = PyDict_GetItemString(kwargs, "docking_space")) GContext->IO.dockingViewport = ToBool(item);
 	if (PyObject* item = PyDict_GetItemString(kwargs, "docking_shift_only")) GContext->IO.dockingShiftOnly = ToBool(item);
+	if (PyObject* item = PyDict_GetItemString(kwargs, "viewports")) GContext->IO.viewports = ToBool(item);
 	if (PyObject* item = PyDict_GetItemString(kwargs, "load_init_file"))
 	{
 		std::string load_init_file = ToString(item);
@@ -2751,6 +2752,7 @@ get_app_configuration(PyObject* self, PyObject* args, PyObject* kwargs)
 	PyDict_SetItemString(pdict, "docking", mvPyObject(ToPyBool(GContext->IO.docking)));
 	PyDict_SetItemString(pdict, "docking_space", mvPyObject(ToPyBool(GContext->IO.docking)));
 	PyDict_SetItemString(pdict, "docking_shift_only", mvPyObject(ToPyBool(GContext->IO.dockingShiftOnly)));
+	PyDict_SetItemString(pdict, "viewports", mvPyObject(ToPyBool(GContext->IO.viewports)));
 	PyDict_SetItemString(pdict, "load_init_file", mvPyObject(ToPyBool(GContext->IO.loadIniFile)));
 	PyDict_SetItemString(pdict, "version", mvPyObject(ToPyString(MV_SANDBOX_VERSION)));
 	PyDict_SetItemString(pdict, "major_version", mvPyObject(ToPyInt(MV_DPG_MAJOR_VERSION)));

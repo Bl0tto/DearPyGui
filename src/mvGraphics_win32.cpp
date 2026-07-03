@@ -207,6 +207,12 @@ present(mvGraphics& graphics, mvColor& clearColor, bool vsync)
 	graphicsData->deviceContext->ClearRenderTargetView(graphicsData->target, clearColor);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
+	if (GContext->IO.viewports)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
 	static UINT presentFlags = 0;
 	if (graphicsData->swapChain->Present(vsync ? 1 : 0, presentFlags) == DXGI_STATUS_OCCLUDED)
 	{

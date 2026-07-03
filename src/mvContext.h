@@ -71,6 +71,7 @@ struct mvIO
     bool docking = false;
     bool dockingViewport = false;
     bool dockingShiftOnly = false;
+    bool viewports = false;
 
     bool kbdNavigation = false;
 
