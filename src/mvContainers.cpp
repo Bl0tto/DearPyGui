@@ -1810,30 +1810,62 @@ DearPyGui::set_configuration(PyObject* inDict, mvDockSpaceConfig& outConfig)
     if (PyObject* item = PyDict_GetItemString(inDict, "flags")) outConfig.flags = (ImGuiDockNodeFlags)ToInt(item);
 }
 
+// Arm KeepAliveOnly on the node tree. Only called on frames where the host window did
+// NOT submit the dockspace (DockNodeUpdate() skipped, MergedFlags untouched this frame).
+// The flag makes BeginDocked() skip its render-order undock check (imgui.cpp ~line 21024)
+// and return early with DockTabIsVisible=false, so docked panels stay docked but hidden.
+//
+// Ordering contract: the proxy must render AFTER the host window (so LastFrameActive
+// reflects whether the host submitted this frame) and BEFORE the docked panels (so
+// LastFrameAlive is already bumped when their BeginDocked() runs on hidden frames).
+// DPG renders windowRoots in creation order: create host -> proxy -> panels.
+// Never call this while the host is active: panels rendering after the proxy would see
+// KeepAliveOnly in MergedFlags and BeginDocked() would hide their content.
+static void SetDockNodeKeepAlive(ImGuiDockNode* node)
+{
+    if (!node) return;
+    node->MergedFlags |= ImGuiDockNodeFlags_KeepAliveOnly;
+    SetDockNodeKeepAlive(node->ChildNodes[0]);
+    SetDockNodeKeepAlive(node->ChildNodes[1]);
+}
+
+// Suppress or restore visual rendering of all windows in the node tree.
+// HiddenFramesCanSkipItems=2: imgui decrements to 1 inside Begin() -> hidden_regular=true
+// -> Begin() returns false -> no rendering. Refreshed each proxy frame while hidden.
+// Set to 0 on restore to clear any stale count.
+static void SetDockNodeWindowsHidden(ImGuiDockNode* node, bool hidden)
+{
+    if (!node) return;
+    for (ImGuiWindow* win : node->Windows)
+    {
+        win->Hidden = hidden;
+        if (hidden)
+            win->HiddenFramesCanSkipItems = 2;
+        else
+            win->HiddenFramesCanSkipItems = 0;
+    }
+    SetDockNodeWindowsHidden(node->ChildNodes[0], hidden);
+    SetDockNodeWindowsHidden(node->ChildNodes[1], hidden);
+}
+
 void
 DearPyGui::draw_dock_space_proxy(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceProxyConfig& config)
 {
     if (!item.config.show) return;
     if (config.dockSpaceId == 0) return;
 
-    ImGui::SetNextWindowPos(ImVec2(-9999.0f, -9999.0f), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(1.0f, 1.0f), ImGuiCond_Always);
+    ImGuiContext& g = *GImGui;
+    ImGuiDockNode* node = (ImGuiDockNode*)g.DockContext.Nodes.GetVoidPtr(config.dockSpaceId);
+    if (!node) return;
 
-    std::string windowName = "##dpg_dsp_" + std::to_string(config.dockSpaceId);
+    node->LastFrameAlive = g.FrameCount;
 
-    constexpr ImGuiWindowFlags kFlags =
-        ImGuiWindowFlags_NoDecoration         |
-        ImGuiWindowFlags_NoInputs             |
-        ImGuiWindowFlags_NoNav                |
-        ImGuiWindowFlags_NoMove               |
-        ImGuiWindowFlags_NoBackground         |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
+    bool hostActive = (node->LastFrameActive == g.FrameCount);
 
-    if (ImGui::Begin(windowName.c_str(), nullptr, kFlags))
-    {
-        ImGui::DockSpace(config.dockSpaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_KeepAliveOnly);
-    }
-    ImGui::End();
+    if (!hostActive)
+        SetDockNodeKeepAlive(node);
+    SetDockNodeWindowsHidden(node, !hostActive);
+
     item.state.lastFrameUpdate = GContext->frame;
 }
 
@@ -1842,6 +1874,14 @@ DearPyGui::fill_configuration_dict(const mvDockSpaceProxyConfig& inConfig, PyObj
 {
     if (outDict == nullptr) return;
     PyDict_SetItemString(outDict, "dock_space_id", ToPyLong((long)inConfig.dockSpaceId));
+}
+
+void
+DearPyGui::set_required_configuration(PyObject* inDict, mvDockSpaceProxyConfig& outConfig)
+{
+    if (!VerifyRequiredArguments(GetParsers()[GetEntityCommand(mvAppItemType::mvDockSpaceProxy)], inDict))
+        return;
+    outConfig.dockSpaceId = (ImGuiID)(ToUUID(PyTuple_GetItem(inDict, 0)) & 0xFFFFFFFFULL);
 }
 
 void

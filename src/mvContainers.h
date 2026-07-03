@@ -307,6 +307,7 @@ struct mvDockSpaceProxyConfig
 
 namespace DearPyGui {
     void fill_configuration_dict(const mvDockSpaceProxyConfig& inConfig, PyObject* outDict);
+    void set_required_configuration(PyObject* inDict, mvDockSpaceProxyConfig& outConfig);
     void set_configuration(PyObject* inDict, mvDockSpaceProxyConfig& outConfig);
     void draw_dock_space_proxy(ImDrawList* drawlist, mvAppItem& item, mvDockSpaceProxyConfig& config);
 }
@@ -318,6 +319,8 @@ public:
     explicit mvDockSpaceProxy(mvUUID uuid) : mvAppItem(uuid) {}
     void draw(ImDrawList* drawlist, float x, float y) override
         { DearPyGui::draw_dock_space_proxy(drawlist, *this, configData); }
+    void handleSpecificRequiredArgs(PyObject* dict) override
+        { DearPyGui::set_required_configuration(dict, configData); }
     void handleSpecificKeywordArgs(PyObject* dict) override
         { DearPyGui::set_configuration(dict, configData); }
     void getSpecificConfiguration(PyObject* dict) override
